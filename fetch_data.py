@@ -30,92 +30,57 @@ def get(endpoint, params=None):
     return response.json()
 
 
-def fetch_standings():
-    """Fetch group stage standings (all groups)."""
-    data = get(f"/competitions/{COMPETITION}/standings")
-    groups = []
-    for standing in data.get("standings", []):
-        group = {
-            "name": standing["group"],  # e.g. "GROUP_A"
-            "teams": []
-        }
-        for row in standing["table"]:
-            group["teams"].append({
-                "name": row["team"]["name"],
-                "played": row["playedGames"],
-                "won": row["won"],
-                "draw": row["draw"],
-                "lost": row["lost"],
-                "goals_for": row["goalsFor"],
-                "goals_against": row["goalsAgainst"],
-                "points": row["points"],
-            })
-        groups.append(group)
-    return groups
-
-
-def fetch_finished_matches():
-    """Fetch matches that have already been played."""
-    data = get(f"/competitions/{COMPETITION}/matches", params={"status": "FINISHED"})
-    matches = []
-    for m in data.get("matches", []):
-        matches.append({
-            "home": m["homeTeam"]["name"],
-            "away": m["awayTeam"]["name"],
-            "home_score": m["score"]["fullTime"]["home"],
-            "away_score": m["score"]["fullTime"]["away"],
-            "group": m.get("group", ""),
-            "stage": m["stage"],
-            "utc_date": m["utcDate"],
-        })
-    return matches
-
-
-def fetch_upcoming_matches():
-    """Fetch scheduled (not yet played) matches."""
-    data = get(f"/competitions/{COMPETITION}/matches", params={"status": "SCHEDULED"})
-    matches = []
-    for m in data.get("matches", []):
-        matches.append({
-            "home": m["homeTeam"]["name"],
-            "away": m["awayTeam"]["name"],
-            "group": m.get("group", ""),
-            "stage": m["stage"],
-            "utc_date": m["utcDate"],
-        })
-    return matches
-
-
-def fetch_live_matches():
-    """Fetch any currently live matches."""
-    data = get(f"/competitions/{COMPETITION}/matches", params={"status": "IN_PLAY"})
-    matches = []
-    for m in data.get("matches", []):
-        matches.append({
-            "home": m["homeTeam"]["name"],
-            "away": m["awayTeam"]["name"],
-            "home_score": m["score"]["fullTime"]["home"],
-            "away_score": m["score"]["fullTime"]["away"],
-            "group": m.get("group", ""),
-            "stage": m["stage"],
-            "utc_date": m["utcDate"],
-        })
-    return matches
-
-
 def fetch_all():
-    print("Fetching finished matches...")
-    finished = fetch_finished_matches()
+    print("Fetching all matches...")
+    data = get(f"/competitions/{COMPETITION}/matches")
+    all_matches = data.get("matches", [])
 
-    print("Fetching upcoming matches...")
-    upcoming = fetch_upcoming_matches()
+    finished, upcoming, live = [], [], []
 
-    print("Fetching live matches...")
-    live = fetch_live_matches()
+    for m in all_matches:
+        status = m["status"]
+        entry = {
+            "home": m["homeTeam"]["name"],
+            "away": m["awayTeam"]["name"],
+            "group": m.get("group", ""),
+            "stage": m["stage"],
+            "utc_date": m["utcDate"],
+        }
+        if status == "FINISHED":
+            entry["home_score"] = m["score"]["fullTime"]["home"]
+            entry["away_score"] = m["score"]["fullTime"]["away"]
+            finished.append(entry)
+        elif status == "IN_PLAY" or status == "PAUSED":
+            entry["home_score"] = m["score"]["fullTime"]["home"]
+            entry["away_score"] = m["score"]["fullTime"]["away"]
+            live.append(entry)
+        else:
+            upcoming.append(entry)
+
+    print("Fetching standings...")
+    try:
+        standings_data = get(f"/competitions/{COMPETITION}/standings")
+        standings = []
+        for standing in standings_data.get("standings", []):
+            group = {"name": standing["group"], "teams": []}
+            for row in standing["table"]:
+                group["teams"].append({
+                    "name": row["team"]["name"],
+                    "played": row["playedGames"],
+                    "won": row["won"],
+                    "draw": row["draw"],
+                    "lost": row["lost"],
+                    "goals_for": row["goalsFor"],
+                    "goals_against": row["goalsAgainst"],
+                    "points": row["points"],
+                })
+            standings.append(group)
+    except Exception:
+        standings = []
 
     return {
         "fetched_at": datetime.now(timezone.utc).isoformat(),
-        "standings": [],  # skip for now
+        "standings": standings,
         "finished_matches": finished,
         "upcoming_matches": upcoming,
         "live_matches": live,
