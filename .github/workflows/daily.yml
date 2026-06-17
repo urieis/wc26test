@@ -21,11 +21,13 @@ jobs:
       - name: Install dependencies
         run: pip install requests anthropic
 
-      - name: Debug fetch script
-        run: grep "STATUS_FULL_TIME" fetch_data.py
-        
       - name: Fetch World Cup data
         run: python fetch_data.py
+
+      - name: Generate HTML pages
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generate_pages.py
 
       - name: Upload to GCS
         run: echo "GCS upload coming soon"
