@@ -84,11 +84,11 @@ def parse_matches(scoreboard_data):
                 "utc_date": utc_date,
             }
 
-            if status_type == "STATUS_FINAL":
+            if status_type in ("STATUS_FINAL", "STATUS_FULL_TIME"):
                 entry["home_score"] = int(home_score) if home_score else 0
                 entry["away_score"] = int(away_score) if away_score else 0
                 finished.append(entry)
-            elif status_type in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME"):
+            elif status_type in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME", "STATUS_FIRST_HALF", "STATUS_SECOND_HALF"):
                 entry["home_score"] = int(home_score) if home_score else 0
                 entry["away_score"] = int(away_score) if away_score else 0
                 live.append(entry)

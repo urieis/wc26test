@@ -21,6 +21,9 @@ jobs:
       - name: Install dependencies
         run: pip install requests anthropic
 
+      - name: Debug fetch script
+        run: grep "STATUS_FULL_TIME" fetch_data.py
+        
       - name: Fetch World Cup data
         run: python fetch_data.py
 
