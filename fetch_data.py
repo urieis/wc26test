@@ -66,7 +66,6 @@ def parse_matches(scoreboard_data):
 
             status = comp.get("status", {})
             status_type = status.get("type", {}).get("name", "STATUS_SCHEDULED")
-            print(f"  DEBUG status: {status_type} | {home_name} vs {away_name}")
             utc_date = comp.get("date", "")
 
             notes = comp.get("notes", [])
