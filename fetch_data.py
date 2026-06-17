@@ -28,9 +28,10 @@ def get(url, params=None):
 
 
 def fetch_scoreboard():
-    """Fetch today's and recent matches from ESPN scoreboard."""
+    """Fetch all tournament matches using a full date range."""
     url = f"{BASE_URL}/{COMPETITION}/scoreboard"
-    return get(url)
+    # WC 2026 runs June 11 - July 19, 2026
+    return get(url, params={"dates": "20260611-20260719", "limit": 200})
 
 
 def fetch_standings():
