@@ -1,0 +1,35 @@
+name: Daily WC2026 Digest
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # runs every day at 6:00 AM UTC (9:00 AM Israel time)
+  workflow_dispatch:       # allows manual trigger from GitHub UI
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests anthropic
+
+      - name: Fetch World Cup data
+        env:
+          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
+        run: python fetch_data.py
+
+      - name: Generate HTML pages
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: python generate_pages.py
+
+      - name: Upload to GCS
+        run: echo "GCS upload coming soon"
