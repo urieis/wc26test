@@ -22,11 +22,6 @@ jobs:
         run: pip install requests anthropic
 
       - name: Fetch World Cup data
-        env:
-          FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
-        run: python fetch_data.py
-
-      - name: Fetch World Cup data
         run: python fetch_data.py
 
       - name: Upload to GCS
