@@ -24,20 +24,10 @@ jobs:
       - name: Fetch World Cup data
         env:
           FOOTBALL_API_KEY: ${{ secrets.FOOTBALL_API_KEY }}
-        run: |
-          python -c "
-          import requests, os
-          key = os.environ.get('FOOTBALL_API_KEY', '')
-          print('Key starts with:', key[:10])
-          r = requests.get('https://api.football-data.org/v4/competitions/WC', headers={'X-Auth-Token': key})
-          print('Status:', r.status_code)
-          print('Response:', r.text[:500])
-          "
+        run: python fetch_data.py
 
-      - name: Generate HTML pages
-        env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-        run: python generate_pages.py
+      - name: Fetch World Cup data
+        run: python fetch_data.py
 
       - name: Upload to GCS
         run: echo "GCS upload coming soon"

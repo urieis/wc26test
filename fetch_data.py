@@ -1,82 +1,145 @@
 """
 fetch_data.py
-Fetches World Cup 2026 data from football-data.org API.
-Returns a structured dict with standings, finished matches, and upcoming matches.
+Fetches World Cup 2026 data from ESPN unofficial API.
+No API key required.
 
 Usage:
-  Set FOOTBALL_API_KEY environment variable, then run:
   python fetch_data.py
 """
 
-import os
 import json
 import requests
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
-API_KEY = os.environ.get("FOOTBALL_API_KEY", "4a734c692bab432985cff651f0b17bac")
-BASE_URL = "https://api.football-data.org/v4"
-COMPETITION = "WC"
+BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer"
+COMPETITION = "fifa.world"  # ESPN competition ID for FIFA World Cup
 
 HEADERS = {
-    "X-Auth-Token": API_KEY
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
 }
 
+ISRAEL_OFFSET = 3  # IDT = UTC+3
 
-def get(endpoint, params=None):
-    """Make a GET request and return parsed JSON."""
-    url = f"{BASE_URL}{endpoint}"
-    response = requests.get(url, headers=HEADERS, params=params, timeout=10)
+
+def get(url, params=None):
+    response = requests.get(url, headers=HEADERS, params=params, timeout=15)
     response.raise_for_status()
     return response.json()
 
 
+def fetch_scoreboard():
+    """Fetch today's and recent matches from ESPN scoreboard."""
+    url = f"{BASE_URL}/{COMPETITION}/scoreboard"
+    return get(url)
+
+
+def fetch_standings():
+    """Fetch group standings from ESPN."""
+    url = f"{BASE_URL}/{COMPETITION}/standings"
+    try:
+        return get(url)
+    except Exception as e:
+        print(f"  Standings fetch failed: {e}")
+        return None
+
+
+def parse_matches(scoreboard_data):
+    """Parse ESPN scoreboard into finished, live, and upcoming matches."""
+    finished, live, upcoming = [], [], []
+
+    events = scoreboard_data.get("events", [])
+    for event in events:
+        competitions = event.get("competitions", [])
+        for comp in competitions:
+            competitors = comp.get("competitors", [])
+            if len(competitors) < 2:
+                continue
+
+            home = next((c for c in competitors if c.get("homeAway") == "home"), competitors[0])
+            away = next((c for c in competitors if c.get("homeAway") == "away"), competitors[1])
+
+            home_name = home.get("team", {}).get("displayName", "Unknown")
+            away_name = away.get("team", {}).get("displayName", "Unknown")
+            home_score = home.get("score", "0")
+            away_score = away.get("score", "0")
+
+            status = comp.get("status", {})
+            status_type = status.get("type", {}).get("name", "STATUS_SCHEDULED")
+            utc_date = comp.get("date", "")
+
+            notes = comp.get("notes", [])
+            group = ""
+            for note in notes:
+                headline = note.get("headline", "")
+                if "Group" in headline:
+                    group = headline
+                    break
+
+            entry = {
+                "home": home_name,
+                "away": away_name,
+                "group": group,
+                "stage": "GROUP_STAGE",
+                "utc_date": utc_date,
+            }
+
+            if status_type == "STATUS_FINAL":
+                entry["home_score"] = int(home_score) if home_score else 0
+                entry["away_score"] = int(away_score) if away_score else 0
+                finished.append(entry)
+            elif status_type in ("STATUS_IN_PROGRESS", "STATUS_HALFTIME"):
+                entry["home_score"] = int(home_score) if home_score else 0
+                entry["away_score"] = int(away_score) if away_score else 0
+                live.append(entry)
+            else:
+                upcoming.append(entry)
+
+    return finished, live, upcoming
+
+
+def parse_standings(standings_data):
+    """Parse ESPN standings into our format."""
+    if not standings_data:
+        return []
+
+    groups = []
+    try:
+        groups_raw = standings_data.get("standings", {}).get("groups", [])
+        for group_raw in groups_raw:
+            group_name = group_raw.get("name", "")
+            teams = []
+            for entry in group_raw.get("standings", {}).get("entries", []):
+                team = entry.get("team", {})
+                stats = {s["name"]: s["value"] for s in entry.get("stats", [])}
+                teams.append({
+                    "name": team.get("displayName", ""),
+                    "played": int(stats.get("gamesPlayed", 0)),
+                    "won": int(stats.get("wins", 0)),
+                    "draw": int(stats.get("ties", 0)),
+                    "lost": int(stats.get("losses", 0)),
+                    "goals_for": int(stats.get("pointsFor", 0)),
+                    "goals_against": int(stats.get("pointsAgainst", 0)),
+                    "points": int(stats.get("points", 0)),
+                })
+            if teams:
+                groups.append({"name": group_name, "teams": teams})
+    except Exception as e:
+        print(f"  Could not parse standings: {e}")
+        return []
+
+    return groups
+
+
 def fetch_all():
-    print("Fetching all matches...")
-    data = get(f"/competitions/{COMPETITION}/matches")
-    all_matches = data.get("matches", [])
-
-    finished, upcoming, live = [], [], []
-
-    for m in all_matches:
-        status = m["status"]
-        entry = {
-            "home": m["homeTeam"]["name"],
-            "away": m["awayTeam"]["name"],
-            "group": m.get("group", ""),
-            "stage": m["stage"],
-            "utc_date": m["utcDate"],
-        }
-        if status == "FINISHED":
-            entry["home_score"] = m["score"]["fullTime"]["home"]
-            entry["away_score"] = m["score"]["fullTime"]["away"]
-            finished.append(entry)
-        elif status == "IN_PLAY" or status == "PAUSED":
-            entry["home_score"] = m["score"]["fullTime"]["home"]
-            entry["away_score"] = m["score"]["fullTime"]["away"]
-            live.append(entry)
-        else:
-            upcoming.append(entry)
+    print("Fetching scoreboard (matches)...")
+    scoreboard = fetch_scoreboard()
+    finished, live, upcoming = parse_matches(scoreboard)
+    print(f"  Found: {len(finished)} finished, {len(live)} live, {len(upcoming)} upcoming")
 
     print("Fetching standings...")
-    try:
-        standings_data = get(f"/competitions/{COMPETITION}/standings")
-        standings = []
-        for standing in standings_data.get("standings", []):
-            group = {"name": standing["group"], "teams": []}
-            for row in standing["table"]:
-                group["teams"].append({
-                    "name": row["team"]["name"],
-                    "played": row["playedGames"],
-                    "won": row["won"],
-                    "draw": row["draw"],
-                    "lost": row["lost"],
-                    "goals_for": row["goalsFor"],
-                    "goals_against": row["goalsAgainst"],
-                    "points": row["points"],
-                })
-            standings.append(group)
-    except Exception:
-        standings = []
+    standings_raw = fetch_standings()
+    standings = parse_standings(standings_raw)
+    print(f"  Found: {len(standings)} groups in standings")
 
     return {
         "fetched_at": datetime.now(timezone.utc).isoformat(),
@@ -89,7 +152,12 @@ def fetch_all():
 
 if __name__ == "__main__":
     data = fetch_all()
-    print(json.dumps(data, indent=2, ensure_ascii=False))
+    print("\n--- SUMMARY ---")
+    print(f"Finished matches: {len(data['finished_matches'])}")
+    print(f"Upcoming matches: {len(data['upcoming_matches'])}")
+    print(f"Live matches:     {len(data['live_matches'])}")
+    print(f"Standings groups: {len(data['standings'])}")
+
     with open("wc_data.json", "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
     print("\nSaved to wc_data.json")
