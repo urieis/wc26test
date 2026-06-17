@@ -1,0 +1,539 @@
+
+
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⚽ וורלדקאפ פלאש — 14 ביוני 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Assistant:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --accent: #00d4aa;
+  --accent2: #f7b731;
+  --text: #e8eaf0;
+  --text-muted: #8892a4;
+  --border: #2a2f45;
+  --win: #2ecc71;
+  --draw: #f39c12;
+  --loss: #e74c3c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Assistant', sans-serif;
+  font-weight: 400;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  direction: rtl;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 2.8rem;
+  color: var(--accent);
+  line-height: 1.2;
+  margin-bottom: 0.2rem;
+}
+
+.header-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.badge {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.2rem 0.7rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-family: 'Assistant', sans-serif;
+  font-weight: 500;
+}
+
+.badge-accent {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+h2 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  border-right: 4px solid var(--accent);
+  padding-right: 0.8rem;
+  margin-bottom: 1rem;
+  margin-top: 2.5rem;
+}
+
+/* Group tables */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 600px) {
+  .groups-grid { grid-template-columns: 1fr; }
+  h1 { font-size: 2rem; }
+}
+
+.group-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.group-card h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 0.5rem 0.7rem;
+  background: var(--surface2);
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+}
+
+.group-card table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.82rem;
+}
+
+.group-card col.col-team { width: 40%; }
+.group-card col.col-stat { width: 8.57%; }
+
+.group-card thead th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.35rem 0.2rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.group-card thead th:first-child { text-align: right; padding-right: 0.7rem; }
+
+.group-card tbody td {
+  text-align: center;
+  padding: 0.35rem 0.2rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.group-card tbody td:first-child {
+  text-align: right;
+  padding-right: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-card tbody tr:nth-child(even) { background: var(--surface2); }
+.group-card tbody tr:nth-child(odd) { background: var(--surface); }
+.group-card tbody tr:nth-child(-n+2) td:first-child { color: var(--accent); }
+
+.group-footnote {
+  padding: 0.4rem 0.7rem;
+  font-size: 0.78rem;
+  color: var(--accent2);
+  background: rgba(247,183,49,0.07);
+  border-top: 1px solid var(--border);
+}
+
+/* Live pulse */
+.live-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: rgba(231,76,60,0.15);
+  color: var(--loss);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.live-dot {
+  width: 7px;
+  height: 7px;
+  background: var(--loss);
+  border-radius: 50%;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.7); }
+}
+
+/* Match cards */
+.match-card {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+}
+
+.match-card .match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.match-card .teams {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--text);
+}
+
+.match-card .score {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--accent2);
+}
+
+.match-card .commentary {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.match-card .match-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.3rem;
+}
+
+/* Today matches */
+.today-card {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+}
+
+.today-card .kickoff {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--accent);
+}
+
+.today-card .teams {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.15rem;
+  margin: 0.2rem 0;
+}
+
+.today-card .prediction {
+  background: var(--surface);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-right: 3px solid var(--accent2);
+}
+
+.today-card .prediction strong { color: var(--accent2); }
+
+.ai-disclaimer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  opacity: 0.7;
+  margin-top: 0.8rem;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Story & insights */
+.story {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1.3rem 1.5rem;
+  margin-top: 1rem;
+  border-right: 4px solid var(--accent);
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.insights { margin-top: 1rem; }
+.insights li {
+  list-style: none;
+  padding: 0.4rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.insights li::before {
+  content: "◆";
+  color: var(--accent);
+  margin-left: 0.5rem;
+  font-size: 0.7rem;
+}
+.insights li:last-child { border-bottom: none; }
+
+/* Must-watch */
+.must-watch {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1.3rem 1.5rem;
+  margin-top: 1rem;
+  border: 1px solid var(--border);
+}
+.must-watch p {
+  margin-bottom: 0.8rem;
+  line-height: 1.75;
+}
+.must-watch p:last-child { margin-bottom: 0; }
+
+.footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+.footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<!-- HEADER -->
+<header>
+<h1>⚽ וורלדקאפ פלאש</h1>
+<div class="header-meta">
+  <span class="badge badge-accent">שלב הבתים</span>
+  <span class="badge">14 ביוני 2026</span>
+  <span class="badge">עדכון אחרון: 22:43 IDT</span>
+  <span class="live-tag"><span class="live-dot"></span> משחק חי</span>
+</div>
+</header>
+
+<!-- STANDINGS -->
+<h2>טבלאות בתים</h2>
+<div class="groups-grid">
+
+<!-- GROUP A -->
+<div class="group-card">
+<h3>בית A</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>מקסיקו</td><td>1</td><td>1</td><td>0</td><td>0</td><td>2</td><td>0</td><td>3</td></tr>
+<tr><td>דרום קוריאה</td><td>1</td><td>1</td><td>0</td><td>0</td><td>2</td><td>1</td><td>3</td></tr>
+<tr><td>צ'כיה</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>2</td><td>0</td></tr>
+<tr><td>דרום אפריקה</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP B -->
+<div class="group-card">
+<h3>בית B</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>קנדה</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>בוסניה</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td>1</td></tr>
+<tr><td>קטאר</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>שווייץ</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+<div class="group-footnote">
+⚽ <strong>חי עכשיו:</strong> קטאר 0 – 1 שווייץ — התוצאה טרם משתקפת בטבלה
+</div>
+</div>
+
+<!-- GROUP C -->
+<div class="group-card">
+<h3>בית C</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>ברזיל</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>מרוקו</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>האיטי</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>סקוטלנד</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP D -->
+<div class="group-card">
+<h3>בית D</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>ארה"ב</td><td>1</td><td>1</td><td>0</td><td>0</td><td>4</td><td>1</td><td>3</td></tr>
+<tr><td>אוסטרליה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>טורקיה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>פרגוואי</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>4</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP E -->
+<div class="group-card">
+<h3>בית E</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>גרמניה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>חוף השנהב</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>אקוודור</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>קוראסאו</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP F -->
+<div class="group-card">
+<h3>בית F</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>הולנד</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>יפן</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>שוודיה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>תוניסיה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP G -->
+<div class="group-card">
+<h3>בית G</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>בלגיה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>מצרים</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>איראן</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>ניו זילנד</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP H -->
+<div class="group-card">
+<h3>בית H</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>ספרד</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>ערב הסעודית</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>אורוגוואי</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>כף ורדה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP I -->
+<div class="group-card">
+<h3>בית I</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>צרפת</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>סנגל</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>עיראק</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>נורווגיה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP J -->
+<div class="group-card">
+<h3>בית J</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>ארגנטינה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>אוסטריה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>אלג'יריה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>ירדן</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP K -->
+<div class="group-card">
+<h3>בית K</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>פורטוגל</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>קולומביה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>אוזבקיסטן</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr><td>קונגו DR</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- GROUP L -->
+<div class="group-card">
+<h3>בית L</h3>
+<table>
+<colgroup><col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"></colgroup>
+<thead><tr><th>קבוצה</th><th>מ</th><th>נ</th><th>ת</th><th>ה</th><th>שיצ</th><th>שספ</th><th>נק</th></tr></thead>
+<tbody>
+<tr><td>אנגליה</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+<tr

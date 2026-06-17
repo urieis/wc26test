@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WorldCupFlash — June 14, 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface2: #22263a;
+  --accent: #00d4aa;
+  --accent2: #f7b731;
+  --text: #e8eaf0;
+  --text-muted: #8892a4;
+  --border: #2a2f45;
+  --win: #2ecc71;
+  --draw: #f39c12;
+  --loss: #e74c3c;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+.container {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1.site-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 2.8rem;
+  color: var(--accent);
+  margin-bottom: 0.1rem;
+}
+
+.header-meta {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin-bottom: 0.3rem;
+}
+
+.header-stage {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--accent2);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 1.5rem;
+}
+
+.section-header {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text);
+  border-left: 4px solid var(--accent);
+  padding-left: 0.75rem;
+  margin: 2rem 0 1rem 0;
+}
+
+/* Group Tables */
+.groups-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .groups-grid { grid-template-columns: 1fr; }
+}
+
+.group-card {
+  background: var(--surface);
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.group-card h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  padding: 0.5rem 0.6rem;
+  background: var(--surface2);
+}
+
+.group-card table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.8rem;
+}
+
+.group-card table colgroup col.col-team { width: 40%; }
+.group-card table colgroup col.col-stat { width: 8.57%; }
+
+.group-card table th {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 0.3rem 0.2rem;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.group-card table th:first-child { text-align: left; padding-left: 0.6rem; }
+
+.group-card table td {
+  text-align: center;
+  padding: 0.35rem 0.2rem;
+  border-top: 1px solid var(--border);
+}
+
+.group-card table td:first-child {
+  text-align: left;
+  padding-left: 0.6rem;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.group-card table tr:nth-child(even) td { background: rgba(255,255,255,0.02); }
+
+.group-card table td.pts {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.group-footnote {
+  font-size: 0.75rem;
+  color: var(--accent2);
+  padding: 0.4rem 0.6rem;
+  background: rgba(247,183,49,0.08);
+  border-top: 1px solid var(--border);
+}
+
+/* Live badge */
+@keyframes pulse-live {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--loss);
+  color: #fff;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  animation: pulse-live 1.4s ease-in-out infinite;
+  vertical-align: middle;
+  margin-left: 0.4rem;
+}
+
+/* Match cards */
+.match-card {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+}
+
+.match-card .match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.match-card .match-teams {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+
+.match-card .match-score {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--accent2);
+}
+
+.match-card .match-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-bottom: 0.4rem;
+}
+
+.match-card .match-commentary {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.65;
+}
+
+/* Fixture cards */
+.fixture-card {
+  background: var(--surface2);
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--border);
+}
+
+.fixture-card .fixture-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.fixture-card .fixture-teams {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.fixture-card .fixture-time {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.fixture-card .fixture-meta {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 0.2rem;
+}
+
+.fixture-card .fixture-prediction {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  padding-top: 0.5rem;
+}
+
+.fixture-card .fixture-prediction .pred-score {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  color: var(--accent2);
+}
+
+.ai-disclaimer {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-style: italic;
+  margin-top: 0.8rem;
+  opacity: 0.7;
+}
+
+/* Story & Talking Points */
+.story-text {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1.2rem 1.4rem;
+  border-left: 4px solid var(--accent2);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+
+.talking-points {
+  list-style: none;
+  padding: 0;
+}
+
+.talking-points li {
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.talking-points li:last-child { border-bottom: none; }
+
+.talking-points li::before {
+  content: '▸';
+  color: var(--accent);
+  margin-right: 0.5rem;
+  font-weight: 700;
+}
+
+/* Game to Watch */
+.game-watch {
+  background: var(--surface);
+  border-radius: 8px;
+  padding: 1.3rem 1.4rem;
+  border: 1px solid var(--border);
+}
+
+.game-watch h3 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--accent2);
+  margin-bottom: 0.8rem;
+}
+
+.game-watch p {
+  margin-bottom: 0.8rem;
+  font-size: 0.93rem;
+  line-height: 1.7;
+}
+
+.footer {
+  margin-top: 2.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.footer a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <h1 class="site-title">⚽ WorldCupFlash</h1>
+  <div class="header-meta">Sunday, June 14, 2026 · Last updated 22:43 IDT</div>
+  <div class="header-stage">Group Stage — Day 4</div>
+</header>
+
+<!-- GROUP TABLES -->
+<h2 class="section-header">Group Tables</h2>
+<div class="groups-grid">
+
+  <!-- GROUP A -->
+  <div class="group-card">
+    <h3>Group A</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Mexico</td><td>1</td><td>1</td><td>0</td><td>0</td><td>2</td><td>0</td><td class="pts">3</td></tr>
+        <tr><td>South Korea</td><td>1</td><td>1</td><td>0</td><td>0</td><td>2</td><td>1</td><td class="pts">3</td></tr>
+        <tr><td>Czechia</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>2</td><td class="pts">0</td></tr>
+        <tr><td>South Africa</td><td>1</td><td>0</td><td>0</td><td>1</td><td>0</td><td>2</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP B -->
+  <div class="group-card">
+    <h3>Group B <span class="live-badge">⚽ LIVE</span></h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Canada</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="pts">1</td></tr>
+        <tr><td>Bosnia-Herz.</td><td>1</td><td>0</td><td>1</td><td>0</td><td>1</td><td>1</td><td class="pts">1</td></tr>
+        <tr><td>Qatar</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Switzerland</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+    <div class="group-footnote">⚽ LIVE: Qatar 0–1 Switzerland — result not yet reflected in standings</div>
+  </div>
+
+  <!-- GROUP C -->
+  <div class="group-card">
+    <h3>Group C</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Brazil</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Morocco</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Haiti</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Scotland</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP D -->
+  <div class="group-card">
+    <h3>Group D</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>United States</td><td>1</td><td>1</td><td>0</td><td>0</td><td>4</td><td>1</td><td class="pts">3</td></tr>
+        <tr><td>Australia</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Turkey</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Paraguay</td><td>1</td><td>0</td><td>0</td><td>1</td><td>1</td><td>4</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP E -->
+  <div class="group-card">
+    <h3>Group E</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Germany</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Ivory Coast</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Ecuador</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Curaçao</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP F -->
+  <div class="group-card">
+    <h3>Group F</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Netherlands</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Japan</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Sweden</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Tunisia</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP G -->
+  <div class="group-card">
+    <h3>Group G</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Belgium</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Egypt</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Iran</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>New Zealand</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP H -->
+  <div class="group-card">
+    <h3>Group H</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Spain</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Saudi Arabia</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Uruguay</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Cape Verde</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP I -->
+  <div class="group-card">
+    <h3>Group I</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>France</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Senegal</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Iraq</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Norway</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP J -->
+  <div class="group-card">
+    <h3>Group J</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Argentina</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Algeria</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Austria</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Jordan</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP K -->
+  <div class="group-card">
+    <h3>Group K</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>Portugal</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Colombia</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Uzbekistan</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Congo DR</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GROUP L -->
+  <div class="group-card">
+    <h3>Group L</h3>
+    <table>
+      <colgroup>
+        <col class="col-team"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat"><col class="col-stat">
+      </colgroup>
+      <thead><tr><th>Team</th><th>P</th><th>W</th><th>D</th><th>L</th><th>GF</th><th>GA</th><th>Pts</th></tr></thead>
+      <tbody>
+        <tr><td>England</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Croatia</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td class="pts">0</td></tr>
+        <tr><td>Ghana</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td
