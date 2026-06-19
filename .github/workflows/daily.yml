@@ -19,7 +19,7 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install requests anthropic
+        run: pip install requests anthropic google-cloud-storage
 
       - name: Fetch World Cup data
         run: python fetch_data.py
@@ -30,4 +30,26 @@ jobs:
         run: python generate_pages.py
 
       - name: Upload to GCS
-        run: echo "GCS upload coming soon"
+        env:
+          GCS_CREDENTIALS: ${{ secrets.GCS_CREDENTIALS }}
+        run: |
+          echo "$GCS_CREDENTIALS" > /tmp/gcs_key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcs_key.json
+          python - << 'PYEOF'
+          from google.cloud import storage
+          import os
+
+          client = storage.Client()
+          bucket = client.bucket("wc2026-digest")
+
+          for lang in ["en", "he"]:
+              source = f"output/{lang}/index.html"
+              dest = f"{lang}/index.html"
+              blob = bucket.blob(dest)
+              blob.upload_from_filename(source, content_type="text/html; charset=utf-8")
+              blob.cache_control = "no-cache, max-age=0"
+              blob.patch()
+              print(f"Uploaded {source} -> gs://wc2026-digest/{dest}")
+
+          print("Done!")
+          PYEOF
